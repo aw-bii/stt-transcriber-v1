@@ -11,360 +11,366 @@ body {
     line-height: 1.6;
 }
 
-.luxury-container {
+/* HIG-Inspired Layout Principles */
+.hig-container {
     max-width: 800px;
     margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Content Area - Should extend edge-to-edge with controls floating above */
+.hig-content {
+    /* Content layer - use standard materials, not Liquid Glass */
+    background-color: white;
+    border-radius: 16px;
     padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.luxury-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
+/* Controls should use Liquid Glass effect (floating above content) */
+.hig-controls-container {
+    position: relative;
+    margin-top: -1rem; /* Negative margin to create overlap effect */
+    z-index: 10;
 }
 
-.luxury-header h1 {
+/* Liquid Glass Control Panel */
+.hig-control-panel {
+    /* Liquid Glass effect - regular variant */
+    background: rgba(250, 250, 249, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Clear Liquid Glass variant for media-rich areas */
+.hig-clear-glass {
+    background: rgba(250, 250, 249, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* HIG Typography - Use system-like hierarchy */
+.hig-heading-1 {
     font-family: 'Bodoni Moda', serif;
     color: #1C1917;
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.5px;
+    font-size: 2.25rem;
     font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.5rem;
 }
 
-.luxury-header p {
+.hig-heading-2 {
+    font-family: 'Bodoni Moda', serif;
+    color: #1C1917;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 1rem;
+}
+
+.hig-body {
+    font-family: 'Jost', sans-serif;
     color: #44403C;
     font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.hig-label {
     font-family: 'Jost', sans-serif;
-    font-weight: 400;
+    color: #1C1917;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    display: block;
 }
 
-.luxury-upload-area {
-    border: 2px dashed #CA8A04;
-    border-radius: 20px;
-    padding: 3rem 2rem;
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(202, 138, 4, 0.03);
-    position: relative;
-    overflow: hidden;
-}
-
-.luxury-upload-area:hover {
-    background: rgba(202, 138, 4, 0.08);
-    border-color: #B07804;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(202, 138, 4, 0.15);
-}
-
-.luxury-upload-area:active {
-    transform: translateY(0px);
-}
-
-.luxury-upload-area.dragover {
-    border-color: #996603;
-    background: rgba(202, 138, 4, 0.12);
-    transform: scale(1.02);
-}
-
-.luxury-upload-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.luxury-upload-content svg {
-    width: 80px;
-    height: 80px;
-    color: #CA8A04;
-    transition: transform 0.3s ease;
-}
-
-.luxury-upload-area:hover .luxury-upload-content svg {
-    transform: scale(1.1);
-}
-
-.luxury-upload-content p {
-    color: #44403C;
-    font-family: 'Jost', sans-serif;
-    font-size: 1rem;
-    margin: 0;
-}
-
-.luxury-browse-btn {
+/* HIG Color Usage - Sparing, reserved for primary actions/status */
+.hig-primary-action {
     background-color: #CA8A04;
     color: white;
     border: none;
-    padding: 0.75rem 2rem;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    font-family: 'Jost', sans-serif;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(202, 138, 4, 0.2);
-    letter-spacing: -0.25px;
-    text-transform: none;
-    height: 3rem;
-    min-width: 120px;
 }
 
-.luxury-browse-btn:hover {
+.hig-primary-action:hover {
     background-color: #B07804;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(202, 138, 4, 0.3);
 }
 
-.luxury-browse-btn:active {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(202, 138, 4, 0.2);
+.hig-primary-action:active {
     background-color: #996603;
 }
 
-.luxury-file-info {
-    margin-top: 1.5rem;
-    padding: 1.5rem;
-    background: rgba(202, 138, 4, 0.05);
-    border-radius: 16px;
-    border-left: 4px solid #CA8A04;
-}
-
-.luxury-file-name {
-    font-weight: 600;
-    color: #1C1917;
-    font-family: 'Jost', sans-serif;
-    margin-bottom: 0.5rem;
-}
-
-.luxury-file-size {
-    color: #44403C;
-    font-size: 0.9rem;
-    font-family: 'Jost', sans-serif;
-}
-
-.luxury-controls {
-    margin-top: 2rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.luxury-transcribe-btn {
-    background-color: #CA8A04;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    font-family: 'Jost', sans-serif;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(202, 138, 4, 0.2);
-    letter-spacing: -0.25px;
-    text-transform: none;
-    height: 3rem;
-    min-width: 140px;
-}
-
-.luxury-transcribe-btn:hover:not(:disabled) {
-    background-color: #B07804;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(202, 138, 4, 0.3);
-}
-
-.luxury-transcribe-btn:disabled {
-    background-color: #BDC3C7;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.luxury-cancel-btn {
+.hig-secondary-action {
     background-color: transparent;
-    color: #44403C;
-    border: 2px solid #44403C;
-    border-radius: 12px;
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    font-family: 'Jost', sans-serif;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: none;
-    letter-spacing: -0.25px;
-    text-transform: none;
-    height: 3rem;
-    min-width: 140px;
-}
-
-.luxury-cancel-btn:hover {
-    background-color: rgba(68, 64, 60, 0.05);
     color: #1C1917;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(68, 64, 60, 0.15);
+    border: 1px solid #CA8A04;
 }
 
-.luxury-cancel-btn:active {
-    transform: translateY(0px);
+.hig-secondary-action:hover {
+    background-color: rgba(202, 138, 4, 0.08);
 }
 
-.luxury-progress-container {
-    margin-top: 2rem;
+.hig-secondary-action:active {
+    background-color: rgba(202, 138, 4, 0.15);
 }
 
-.luxury-progress-bar {
-    width: 100%;
-    height: 8px;
-    background-color: #ECF0F1;
-    border-radius: 4px;
+/* HIG Touch Targets - Minimum 44x44pt */
+.hig-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* HIG Spacing and Layout */
+.hig-spacing-2 { margin: 0.5rem; }
+.hig-spacing-3 { margin: 0.75rem; }
+.hig-spacing-4 { margin: 1rem; }
+.hig-spacing-5 { margin: 1.5rem; }
+.hig-spacing-6 { margin: 2rem; }
+.hig-spacing-8 { margin: 2.5rem; }
+
+.hig-flex-column { display: flex; flex-direction: column; }
+.hig-flex-row { display: flex; flex-direction: row; }
+.hig-flex-center { justify-content: center; align-items: center; }
+.hig-flex-between { justify-content: space-between; }
+.hig-flex-wrap { flex-wrap: wrap; }
+.hig-gap-2 { gap: 0.5rem; }
+.hig-gap-3 { gap: 0.75rem; }
+.hig-gap-4 { gap: 1rem; }
+.hig-gap-5 { gap: 1.5rem; }
+.hig-gap-6 { gap: 2rem; }
+
+/* HIG Forms and Inputs */
+.hig-input-field {
+    background-color: rgba(250, 250, 249, 0.3);
+    border: 1px solid rgba(202, 138, 4, 0.2);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-family: 'Jost', sans-serif;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.hig-input-field:focus {
+    outline: none;
+    border-color: #CA8A04;
+    box-shadow: 0 0 0 3px rgba(202, 138, 4, 0.2);
+    background-color: white;
+}
+
+.hig-input-field::placeholder {
+    color: rgba(68, 64, 60, 0.5);
+}
+
+/* HIG Cards and Containers */
+.hig-card {
+    background: rgba(250, 250, 249, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.hig-card-media {
+    /* Clear glass for media areas */
+    background: rgba(250, 250, 249, 0.25);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
     overflow: hidden;
-    margin-bottom: 0.5rem;
 }
 
-.luxury-progress-fill {
+/* HIG Progress Indicators */
+.hig-progress-bar {
+    height: 6px;
+    background-color: rgba(202, 138, 4, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+
+.hig-progress-fill {
     height: 100%;
     background: linear-gradient(90deg, #CA8A04, #B07804);
-    border-radius: 4px;
+    border-radius: 3px;
     width: 0%;
     transition: width 0.3s ease;
 }
 
-.luxury-progress-text {
-    text-align: center;
-    color: #44403C;
-    font-size: 0.9rem;
+/* HIG Button Styles */
+.hig-button {
     font-family: 'Jost', sans-serif;
-}
-
-.luxury-results-container {
-    margin-top: 2.5rem;
-    background: rgba(250, 250, 249, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    padding: 2.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(202, 138, 4, 0.1);
-}
-
-.luxury-results-container h2 {
-    color: #1C1917;
-    font-family: 'Bodoni Moda', serif;
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    letter-spacing: -0.5px;
-    font-weight: 700;
-}
-
-.luxury-transcription-text {
-    background-color: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(202, 138, 4, 0.2);
-    border-radius: 16px;
-    padding: 2rem;
-    min-height: 150px;
-    line-height: 1.8;
-    color: #0C0A09;
-    font-family: 'Jost', sans-serif;
-    font-size: 1.1rem;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    transition: all 0.3s ease;
-}
-
-.luxury-transcription-text:focus-within {
-    background-color: white;
-    backdrop-filter: none;
-    border-color: #CA8A04;
-    box-shadow: 0 0 0 3px rgba(202, 138, 4, 0.2);
-}
-
-.luxury-results-actions {
-    margin-top: 2rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.luxury-action-btn {
-    background-color: #CA8A04;
-    color: white;
+    font-weight: 600;
     border: none;
     border-radius: 12px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    font-family: 'Jost', sans-serif;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(202, 138, 4, 0.2);
-    letter-spacing: -0.25px;
-    text-transform: none;
-    height: 2.75rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 
-.luxury-action-btn:hover {
+.hig-button-primary {
+    background-color: #CA8A04;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    min-height: 44px;
+}
+
+.hig-button-primary:hover {
     background-color: #B07804;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(202, 138, 4, 0.25);
+    transform: translateY(-1px);
 }
 
-.luxury-action-btn:active {
+.hig-button-primary:active {
+    transform: translateY(0px);
+    background-color: #996603;
+}
+
+.hig-button-secondary {
+    background-color: transparent;
+    color: #1C1917;
+    border: 1px solid #CA8A04;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    min-height: 44px;
+}
+
+.hig-button-secondary:hover {
+    background-color: rgba(202, 138, 4, 0.08);
+}
+
+.hig-button-secondary:active {
+    background-color: rgba(202, 138, 4, 0.15);
+}
+
+.hig-button-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.hig-button-icon-primary {
+    background-color: #CA8A04;
+    color: white;
+}
+
+.hig-button-icon-primary:hover {
+    background-color: #B07804;
+}
+
+/* HIG Transitions and Animations */
+.hig-transition-fast { transition: all 0.15s ease; }
+.hig-transition-moderate { transition: all 0.2s ease; }
+.hig-transition-slow { transition: all 0.3s ease; }
+
+.hig-hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hig-hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.hig-hover-lift:active {
     transform: translateY(0px);
 }
 
-footer {
-    text-align: center;
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(202, 138, 4, 0.2);
-    color: #44403C;
-    font-size: 0.9rem;
-    font-family: 'Jost', sans-serif;
-}
-
-/* Responsive design */
+/* Responsive Design - HIG Principles */
 @media (max-width: 768px) {
-    .luxury-container {
+    .hig-container {
         padding: 1rem;
     }
     
-    .luxury-header h1 {
+    .hig-heading-1 {
         font-size: 2rem;
     }
     
-    .luxury-header p {
+    .hig-heading-2 {
+        font-size: 1.5rem;
+    }
+    
+    .hig-body {
         font-size: 1rem;
-    }
-    
-    .luxury-upload-area {
-        padding: 2rem 1.5rem;
-    }
-    
-    .luxury-browse-btn,
-    .luxury-transcribe-btn,
-    .luxury-cancel-btn,
-    .luxury-action-btn {
-        width: 100%;
-        margin: 0.5rem 0;
-    }
-    
-    .luxury-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .luxury-results-actions {
-        flex-direction: column;
-        align-items: stretch;
     }
 }
 
-@media (max-width: 480px) {
-    .luxury-header h1 {
-        font-size: 1.75rem;
+/* Accessibility Enhancements */
+.hig-focus-visible:focus-visible {
+    outline: 2px solid #CA8A04;
+    outline-offset: 2px;
+}
+
+.hig-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Dark Mode Support - HIG requires both light and dark */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1C1917;
+        color: #FAFAF9;
     }
     
-    .luxury-upload-area {
-        padding: 1.5rem 1rem;
+    .hig-content {
+        background-color: rgba(28, 25, 23, 0.8);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hig-control-panel {
+        background: rgba(28, 25, 23, 0.6);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(44, 40, 36, 0.3);
+    }
+    
+    .hig-heading-1,
+    .hig-heading-2,
+    .hig-body,
+    .hig-label {
+        color: #FAFAF9;
+    }
+    
+    .hig-input-field {
+        background-color: rgba(44, 40, 36, 0.3);
+        border: 1px solid rgba(202, 138, 4, 0.3);
+        color: #FAFAF9;
+    }
+    
+    .hig-input-field::placeholder {
+        color: rgba(250, 250, 249, 0.5);
+    }
+    
+    .hig-card {
+        background: rgba(28, 25, 23, 0.4);
+        border: 1px solid rgba(44, 40, 36, 0.2);
+    }
+    
+    .hig-progress-bar {
+        background-color: rgba(202, 138, 4, 0.2);
     }
 }

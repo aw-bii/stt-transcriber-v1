@@ -7,62 +7,79 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="luxury-container">
-        <header class="luxury-header">
-            <h1>🎤 Hinglish Speech-to-Text</h1>
-            <p>Convert Hindi-English code-switched audio to text with studio-quality precision</p>
-        </header>
+    <!-- HIG Layout: Content extends edge-to-edge, controls float above -->
+    <div class="hig-container">
+        <!-- Content Layer (Standard Materials) -->
+        <div class="hig-content">
+            <header class="hig-flex-column hig-gap-3">
+                <h1 class="hig-heading-1">🎤 Hinglish Speech-to-Text</h1>
+                <p class="hig-body">Convert Hindi-English code-switched audio to text with studio-quality precision</p>
+            </header>
 
-        <main class="luxury-main">
-            <!-- File Upload Area -->
-            <div class="luxury-upload-area" id="uploadArea">
-                <div class="luxury-upload-content">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                    <p>Drag & drop your audio file here</p>
-                    <p>or</p>
-                    <button type="button" class="luxury-browse-btn" id="browseBtn">Browse Files</button>
+            <main class="hig-flex-column hig-gap-5">
+                <!-- File Upload Area (HIG Control Panel - Liquid Glass) -->
+                <div class="hig-control-panel hig-flex-column hig-gap-4">
+                    <div class="hig-flex-column hig-items-center hig-gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p class="hig-body">Drag & drop your audio file here</p>
+                        <p class="hig-body hig-text-secondary">or</p>
+                        <button type="button" class="hig-button-primary" id="browseBtn">Browse Files</button>
+                    </div>
                     <input type="file" id="fileInput" accept=".wav,.mp3,.m4a,.flac,.ogg" style="display: none;">
                 </div>
-            </div>
 
-            <!-- File Info -->
-            <div class="luxury-file-info" id="fileInfo" style="display: none;">
-                <div class="luxury-file-name" id="fileName"></div>
-                <div class="luxury-file-size" id="fileSize"></div>
-            </div>
-
-            <!-- Controls -->
-            <div class="luxury-controls" id="controls" style="display: none;">
-                <button type="button" class="luxury-transcribe-btn" id="transcribeBtn" disabled>Transcribe Audio</button>
-                <button type="button" class="luxury-cancel-btn" id="cancelBtn">Cancel</button>
-            </div>
-
-            <!-- Progress Container -->
-            <div class="luxury-progress-container" id="progressContainer" style="display: none;">
-                <div class="luxury-progress-bar">
-                    <div class="luxury-progress-fill" id="progressFill"></div>
+                <!-- File Info -->
+                <div id="fileInfo" class="hig-card hig-hidden">
+                    <div class="hig-flex-row hig-justify-between hig-items-center">
+                        <div>
+                            <p class="hig-label" id="fileNameLabel">File Name</p>
+                            <p class="hig-body" id="fileName"></p>
+                        </div>
+                        <div class="hig-flex-column hig-items-end">
+                            <p class="hig-label" id="fileSizeLabel">File Size</p>
+                            <p class="hig-body" id="fileSize"></p>
+                        </div>
+                    </div>
                 </div>
-                <p class="luxury-progress-text" id="progressText">Processing...</p>
-            </div>
 
-            <!-- Results Container -->
-            <div class="luxury-results-container" id="resultsContainer" style="display: none;">
-                <h2>📝 Transcription Results</h2>
-                <div class="luxury-transcription-text" id="transcriptionText"></div>
-                <div class="luxury-results-actions">
-                    <button type="button" class="luxury-action-btn" id="copyBtn">Copy Text</button>
-                    <button type="button" class="luxury-action-btn" id="downloadBtn">Download as TXT</button>
+                <!-- Controls -->
+                <div id="controls" class="hig-flex-row hig-justify-center hig-gap-4 hig-hidden">
+                    <button type="button" class="hig-button-primary" id="transcribeBtn" disabled>Transcribe Audio</button>
+                    <button type="button" class="hig-button-secondary" id="cancelBtn">Cancel</button>
                 </div>
-            </div>
-        </main>
 
-        <footer class="luxury-footer">
-            <p>Powered by <strong>shunyalabs/zero-stt-hinglish</strong> • Studio Grade Audio AI</p>
-            <p>Precision Engineered for Professional Transcription</p>
+                <!-- Progress Container -->
+                <div id="progressContainer" class="hig-hidden">
+                    <div class="hig-flex-column hig-items-center hig-gap-2">
+                        <div class="hig-progress-bar">
+                            <div class="hig-progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="hig-body" id="progressText">Processing...</p>
+                    </div>
+                </div>
+
+                <!-- Results Container -->
+                <div id="resultsContainer" class="hig-card hig-hidden">
+                    <div class="hig-flex-column hig-gap-4">
+                        <h2 class="hig-heading-2">📝 Transcription Results</h2>
+                        <div class="hig-input-field" id="transcriptionText" contenteditable="false"></div>
+                        <div class="hig-flex-row hig-justify-center hig-gap-3">
+                            <button type="button" class="hig-button-secondary" id="copyBtn">Copy Text</button>
+                            <button type="button" class="hig-button-secondary" id="downloadBtn">Download as TXT</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer - Could use Liquid Glass if desired -->
+        <footer class="hig-control-panel hig-text-center hig-mt-6">
+            <p class="hig-body">Powered by <strong>shunyalabs/zero-stt-hinglish</strong> • Studio Grade Audio AI</p>
+            <p class="hig-body hig-text-secondary">Precision Engineered for Professional Transcription</p>
         </footer>
     </div>
 

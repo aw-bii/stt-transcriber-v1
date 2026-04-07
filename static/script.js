@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const uploadArea = document.getElementById('uploadArea');
+    const uploadArea = document.querySelector('.hig-control-panel');
     const browseBtn = document.getElementById('browseBtn');
     const fileInput = document.getElementById('fileInput');
     const fileInfo = document.getElementById('fileInfo');
+    const fileNameLabel = document.getElementById('fileNameLabel');
     const fileName = document.getElementById('fileName');
+    const fileSizeLabel = document.getElementById('fileSizeLabel');
     const fileSize = document.getElementById('fileSize');
     const controls = document.getElementById('controls');
     const transcribeBtn = document.getElementById('transcribeBtn');
@@ -69,9 +71,13 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedFile = file;
         fileName.textContent = file.name;
         fileSize.textContent = formatFileSize(file.size);
-        fileInfo.style.display = 'block';
-        controls.style.display = 'flex';
+        fileInfo.classList.remove('hig-hidden');
+        controls.classList.remove('hig-hidden');
         transcribeBtn.disabled = false;
+        
+        // Update labels for accessibility
+        fileNameLabel.textContent = 'File Name';
+        fileSizeLabel.textContent = 'File Size';
     }
 
     // Format file size for display
@@ -92,9 +98,10 @@ document.addEventListener('DOMContentLoaded', function() {
         browseBtn.disabled = true;
         fileInput.disabled = true;
         uploadArea.style.pointerEvents = 'none';
+        uploadArea.classList.add('hig-pointer-none');
         
         // Show progress
-        progressContainer.style.display = 'block';
+        progressContainer.classList.remove('hig-hidden');
         progressText.textContent = 'Uploading file...';
         progressFill.style.width = '0%';
 
@@ -119,11 +126,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Show results
             transcriptionText.textContent = result.text || 'No transcription available';
-            resultsContainer.style.display = 'block';
+            resultsContainer.classList.remove('hig-hidden');
 
             // Hide progress after a brief delay
             setTimeout(() => {
-                progressContainer.style.display = 'none';
+                progressContainer.classList.add('hig-hidden');
             }, 1000);
 
         } catch (error) {
@@ -132,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
             progressFill.style.backgroundColor = '#e74c3c';
             
             setTimeout(() => {
-                progressContainer.style.display = 'none';
+                progressContainer.classList.add('hig-hidden');
                 progressFill.style.backgroundColor = '#3498db';
             }, 3000);
         } finally {
@@ -141,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
             browseBtn.disabled = false;
             fileInput.disabled = false;
             uploadArea.style.pointerEvents = 'auto';
+            uploadArea.classList.remove('hig-pointer-none');
         }
     });
 
@@ -149,10 +157,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset form
         selectedFile = null;
         fileInput.value = '';
-        fileInfo.style.display = 'none';
-        controls.style.display = 'none';
-        resultsContainer.style.display = 'none';
-        progressContainer.style.display = 'none';
+        fileInfo.classList.add('hig-hidden');
+        controls.classList.add('hig-hidden');
+        resultsContainer.classList.add('hig-hidden');
+        progressContainer.classList.add('hig-hidden');
         progressFill.style.width = '0%';
         progressFill.style.backgroundColor = '#3498db';
         progressText.textContent = 'Processing...';
