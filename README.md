@@ -1,112 +1,90 @@
 # Hinglish Speech-to-Text Tool
 
-A simple tool to convert audio files to text using the [shunyalabs/zero-stt-hinglish](https://huggingface.co/shunyalabs/zero-stt-hinglish) model from Hugging Face. This model is specifically designed for Hinglish (Hindi-English code-switching) speech recognition.
+A standalone Windows app for Hindi-English speech-to-text transcription using the [shunyalabs/zero-stt-hinglish](https://huggingface.co/shunyalabs/zero-stt-hinglish) model.
 
 ## Features
 
-- Transcribes Hinglish audio (Hindi-English code-switching)
-- Supports common audio formats (mp3, wav, etc.)
-- Outputs transcription to console or saves to file
-- Easy to use command-line interface
-- **NEW**: Drag-and-drop web interface for easy file transcription
+- **Offline Ready** - Works after first run (model cached locally)
+- **Apple Design** - Beautiful iOS-style interface
+- **Hinglish Support** - Optimized for Hindi-English code-switching
+- **Drag & Drop** - Easy audio file upload
+- **Privacy First** - All processing happens on your computer
 
-## Installation
+## Quick Start
 
-1. Clone this repository or download the files
-2. Install the required dependencies:
-
+### Option 1: Run as Python App
 ```bash
 pip install -r requirements.txt
+python main.py
 ```
 
-## Usage
-
-### Command Line Interface
-Basic usage:
+### Option 2: Run Standalone Executable
 ```bash
-python stt_hinglish.py path/to/audio/file.mp3
+dist\HinglishSTT.exe
 ```
 
-Save output to a file:
+Open your browser to http://localhost:8501
+
+## Building the Executable
+
+```batch
+build.bat
+```
+
+Or manually:
 ```bash
-python stt_hinglish.py path/to/audio/file.mp3 -o transcription.txt
+pip install pyinstaller
+pyinstaller --onefile --windowed --name HinglishSTT main.py
 ```
 
-Specify a different model (optional):
-```bash
-python stt_hinglish.py path/to/audio/file.mp3 --model shunyalabs/zero-stt-hinglish
+## System Requirements
+
+- **OS:** Windows 10 or later
+- **RAM:** 8GB minimum (16GB recommended)
+- **Storage:** 5GB free space
+- **Internet:** Required for first run only (model download)
+
+## First Run
+
+The AI model (~3GB) downloads automatically on first use and is cached locally. Subsequent runs work offline.
+
+Model cached at: `%USERPROFILE%\.cache\huggingface\hub\`
+
+## Project Structure
+
+```
+├── app.py              # Streamlit app (Apple HIG design)
+├── stt_hinglish.py     # Transcription module
+├── main.py             # Launcher script
+├── build.bat           # Build script
+├── build.spec          # PyInstaller spec
+├── requirements.txt    # Python dependencies
+└── design-system/      # UI design specs
 ```
 
-### Web Interface
-Start the web service:
-```bash
-python app.py
-```
+## Supported Formats
 
-Then open your browser to `http://localhost:5000` to access the drag-and-drop interface.
+- WAV, MP3, M4A, FLAC, OGG
+- Max file size: 200MB
 
-## Requirements
+## Model Info
 
-- Python 3.7+
-- torch
-- transformers
-- accelerate
-- flask
-- werkzeug
-
-See `requirements.txt` for details.
-
-## How It Works
-
-This tool uses the Hugging Face Transformers library to load the `shunyalabs/zero-stt-hinglish` model, which is a post-trained version of OpenAI's Whisper Medium model specifically fine-tuned for Hinglish speech recognition.
-
-The model excels at handling code-switched speech where speakers naturally alternate between Hindi and English mid-sentence.
-
-## Model Information
-
-- **Model ID**: `shunyalabs/zero-stt-hinglish`
-- **Base Model**: OpenAI Whisper Medium
-- **Language**: Hinglish (Hindi-English code-switching)
-- **License**: OpenRAIL
-- **Size**: 0.8B parameters
-
-For more information about the model, visit: https://huggingface.co/shunyalabs/zero-stt-hinglish
-
-## Example
-
-```bash
-python stt_hinglish.py sample.wav
-```
-
-Output:
-```
-Loading the shunyalabs/zero-stt-hinglish model...
-Transcribing sample.wav...
-
-Transcription:
---------------------------------------------------
-अरे यार आज meeting में बड़ा fun था हम लोग नए project पर discuss कर रहे थे
---------------------------------------------------
-```
-
-## Notes
-
-- The first run will download the model (~1.5GB), which may take some time depending on your internet connection
-- Subsequent runs will use the cached model
-- GPU acceleration is automatically used if available
-- For best results, use clear audio with minimal background noise
-- Maximum file size for web interface: 100MB
+- **Model:** shunyalabs/zero-stt-hinglish
+- **Base:** OpenAI Whisper Medium
+- **Languages:** Hinglish (Hindi-English code-switching)
+- **Size:** ~3GB cached
 
 ## Troubleshooting
 
-If you encounter issues:
+### Out of Memory
+Close other apps, ensure 8GB+ RAM available.
 
-1. Make sure you have a stable internet connection for the initial model download
-2. Check that your audio file is in a supported format
-3. Ensure you have sufficient disk space for the model (~2GB)
-4. If you get CUDA errors and don't have a GPU, the model will fall back to CPU (slower but functional)
-5. For web interface issues, check that Flask is installed correctly
+### Model download fails
+Check internet connection and try again.
+
+### Port 8501 in use
+Change port in main.py or kill the conflicting process.
 
 ## License
 
-This tool is provided as-is. The underlying model is licensed under OpenRAIL - see the model card for details.
+MIT - Model licensed under OpenRAIL
