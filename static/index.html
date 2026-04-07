@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hinglish Speech-to-Text Converter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hinglish Speech-to-Text Converter</h1>
+            <p>Convert Hindi-English code-switched audio to text</p>
+        </header>
+
+        <main>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p>Drag & drop your audio file here</p>
+                    <p>or</p>
+                    <button type="button" id="browseBtn">Browse Files</button>
+                    <input type="file" id="fileInput" accept=".wav,.mp3,.m4a,.flac,.ogg" style="display: none;">
+                </div>
+            </div>
+
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <div class="file-name" id="fileName"></div>
+                <div class="file-size" id="fileSize"></div>
+            </div>
+
+            <div class="controls" id="controls" style="display: none;">
+                <button type="button" id="transcribeBtn" disabled>Transcribe Audio</button>
+                <button type="button" id="cancelBtn">Cancel</button>
+            </div>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Processing...</p>
+            </div>
+
+            <div class="results-container" id="resultsContainer" style="display: none;">
+                <h2>Transcription Results</h2>
+                <div class="transcription-text" id="transcriptionText"></div>
+                <div class="results-actions">
+                    <button type="button" id="copyBtn">Copy Text</button>
+                    <button type="button" id="downloadBtn">Download as TXT</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by shunyalabs/zero-stt-hinglish model</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
