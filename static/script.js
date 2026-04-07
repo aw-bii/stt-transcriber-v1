@@ -1,86 +1,49 @@
+/* ============================================
+   HinglishSTT - Apple HIG JavaScript
+   ============================================ */
+
 document.addEventListener('DOMContentLoaded', function() {
-    const uploadArea = document.querySelector('.hig-control-panel');
-    const browseBtn = document.getElementById('browseBtn');
+    // -----------------------------------------
+    // DOM Elements
+    // -----------------------------------------
+    const uploadZone = document.getElementById('uploadZone');
+    const uploadContent = document.getElementById('uploadContent');
+    const emptyState = document.getElementById('emptyState');
+    const fileSelectedState = document.getElementById('fileSelectedState');
+    const dragOverState = document.getElementById('dragOverState');
     const fileInput = document.getElementById('fileInput');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileNameLabel = document.getElementById('fileNameLabel');
-    const fileName = document.getElementById('fileName');
-    const fileSizeLabel = document.getElementById('fileSizeLabel');
-    const fileSize = document.getElementById('fileSize');
-    const controls = document.getElementById('controls');
+    const fileNameEl = document.getElementById('fileName');
+    const fileMetaEl = document.getElementById('fileMeta');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+    const actionSection = document.getElementById('actionSection');
     const transcribeBtn = document.getElementById('transcribeBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const progressContainer = document.getElementById('progressContainer');
+    const progressSection = document.getElementById('progressSection');
+    const progressStatus = document.getElementById('progressStatus');
     const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    const resultsContainer = document.getElementById('resultsContainer');
-    const transcriptionText = document.getElementById('transcriptionText');
+    const progressPercent = document.getElementById('progressPercent');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const resultsSection = document.getElementById('resultsSection');
+    const transcriptionContent = document.getElementById('transcriptionContent');
+    const confidenceBadge = document.getElementById('confidenceBadge');
+    const resultFileName = document.getElementById('resultFileName');
+    const resultFileMeta = document.getElementById('resultFileMeta');
     const copyBtn = document.getElementById('copyBtn');
+    const copyBtnText = document.getElementById('copyBtnText');
     const downloadBtn = document.getElementById('downloadBtn');
+    const newTranscriptionBtn = document.getElementById('newTranscriptionBtn');
+    const stepUpload = document.getElementById('stepUpload');
+    const stepProcess = document.getElementById('stepProcess');
+    const stepComplete = document.getElementById('stepComplete');
 
+    // -----------------------------------------
+    // State
+    // -----------------------------------------
     let selectedFile = null;
+    let isProcessing = false;
 
-    // Handle drag and drop
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        
-        const dt = e.dataTransfer;
-        if (dt.files && dt.files.length > 0) {
-            handleFile(dt.files[0]);
-        }
-    });
-
-    // Handle browse button click
-    browseBtn.addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    // Handle file input change
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
-    });
-
-    // Handle file selection
-    function handleFile(file) {
-        // Validate file type
-        const allowedTypes = ['audio/wav', 'audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/flac', 'audio/ogg'];
-        if (!allowedTypes.includes(file.type)) {
-            alert('Please select a valid audio file (WAV, MP3, M4A, FLAC, OGG)');
-            return;
-        }
-
-        // Validate file size (100MB limit)
-        const maxSize = 100 * 1024 * 1024; // 100MB
-        if (file.size > maxSize) {
-            alert('File size exceeds 100MB limit');
-            return;
-        }
-
-        selectedFile = file;
-        fileName.textContent = file.name;
-        fileSize.textContent = formatFileSize(file.size);
-        fileInfo.classList.remove('hig-hidden');
-        controls.classList.remove('hig-hidden');
-        transcribeBtn.disabled = false;
-        
-        // Update labels for accessibility
-        fileNameLabel.textContent = 'File Name';
-        fileSizeLabel.textContent = 'File Size';
-    }
-
-    // Format file size for display
+    // -----------------------------------------
+    // Utility Functions
+    // -----------------------------------------
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -89,110 +52,329 @@ document.addEventListener('DOMContentLoaded', function() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    // Handle transcribe button click
-    transcribeBtn.addEventListener('click', async () => {
-        if (!selectedFile) return;
+    function showState(elementToShow) {
+        // Hide all states
+        emptyState.hidden = true;
+        fileSelectedState.hidden = true;
+        dragOverState.hidden = true;
 
-        // Disable UI during processing
+        // Show requested state
+        if (elementToShow) {
+            elementToShow.hidden = false;
+        }
+    }
+
+    function updateProgress(percent, status) {
+        progressFill.style.width = percent + '%';
+        progressPercent.textContent = Math.round(percent) + '%';
+        if (status) {
+            progressStatus.textContent = status;
+        }
+    }
+
+    function setStep(step) {
+        // Reset all steps
+        stepUpload.classList.remove('active', 'completed');
+        stepProcess.classList.remove('active', 'completed');
+        stepComplete.classList.remove('active', 'completed');
+
+        // Activate up to current step
+        if (step >= 1) stepUpload.classList.add('completed');
+        if (step >= 2) stepProcess.classList.add('active');
+        if (step >= 3) stepComplete.classList.add('active');
+        if (step === 4) {
+            stepUpload.classList.add('completed');
+            stepProcess.classList.add('completed');
+            stepComplete.classList.add('completed');
+        }
+    }
+
+    function showScreen(screen) {
+        actionSection.hidden = true;
+        progressSection.hidden = true;
+        resultsSection.hidden = true;
+
+        if (screen === 'action') {
+            actionSection.hidden = false;
+        } else if (screen === 'progress') {
+            progressSection.hidden = false;
+        } else if (screen === 'results') {
+            resultsSection.hidden = false;
+        }
+    }
+
+    // -----------------------------------------
+    // File Handling
+    // -----------------------------------------
+    function handleFile(file) {
+        // Validate file type
+        const allowedTypes = ['audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/x-m4a', 'audio/m4a', 'audio/flac', 'audio/ogg'];
+        const allowedExtensions = ['.wav', '.mp3', '.m4a', '.flac', '.ogg'];
+        const extension = '.' + file.name.split('.').pop().toLowerCase();
+
+        if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(extension)) {
+            alert('Please select a valid audio file (WAV, MP3, M4A, FLAC, OGG)');
+            return;
+        }
+
+        // Validate file size (200MB limit)
+        const maxSize = 200 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert('File size exceeds 200MB limit');
+            return;
+        }
+
+        selectedFile = file;
+
+        // Update file info display
+        fileNameEl.textContent = file.name;
+        fileMetaEl.textContent = formatFileSize(file.size);
+
+        // Update result file info
+        resultFileName.textContent = file.name;
+        resultFileMeta.textContent = formatFileSize(file.size);
+
+        // Show file selected state
+        showState(fileSelectedState);
+        actionSection.hidden = false;
+        transcribeBtn.disabled = false;
+    }
+
+    function clearFile() {
+        selectedFile = null;
+        fileInput.value = '';
+        showState(emptyState);
+        actionSection.hidden = true;
         transcribeBtn.disabled = true;
-        browseBtn.disabled = true;
-        fileInput.disabled = true;
-        uploadArea.style.pointerEvents = 'none';
-        uploadArea.classList.add('hig-pointer-none');
-        
-        // Show progress
-        progressContainer.classList.remove('hig-hidden');
-        progressText.textContent = 'Uploading file...';
-        progressFill.style.width = '0%';
+    }
 
-        try {
-            const formData = new FormData();
-            formData.append('audio_file', selectedFile);
-
-            const response = await fetch('/transcribe', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
-            }
-
-            const result = await response.json();
-            
-            // Update progress
-            progressText.textContent = 'Processing complete!';
-            progressFill.style.width = '100%';
-
-            // Show results
-            transcriptionText.textContent = result.text || 'No transcription available';
-            resultsContainer.classList.remove('hig-hidden');
-
-            // Hide progress after a brief delay
-            setTimeout(() => {
-                progressContainer.classList.add('hig-hidden');
-            }, 1000);
-
-        } catch (error) {
-            console.error('Error:', error);
-            progressText.textContent = 'Error: ' + error.message;
-            progressFill.style.backgroundColor = '#e74c3c';
-            
-            setTimeout(() => {
-                progressContainer.classList.add('hig-hidden');
-                progressFill.style.backgroundColor = '#3498db';
-            }, 3000);
-        } finally {
-            // Re-enable UI
-            transcribeBtn.disabled = false;
-            browseBtn.disabled = false;
-            fileInput.disabled = false;
-            uploadArea.style.pointerEvents = 'auto';
-            uploadArea.classList.remove('hig-pointer-none');
+    // Upload zone click
+    uploadZone.addEventListener('click', () => {
+        if (!isProcessing) {
+            fileInput.click();
         }
     });
 
-    // Handle cancel button click
-    cancelBtn.addEventListener('click', () => {
-        // Reset form
-        selectedFile = null;
-        fileInput.value = '';
-        fileInfo.classList.add('hig-hidden');
-        controls.classList.add('hig-hidden');
-        resultsContainer.classList.add('hig-hidden');
-        progressContainer.classList.add('hig-hidden');
-        progressFill.style.width = '0%';
-        progressFill.style.backgroundColor = '#3498db';
-        progressText.textContent = 'Processing...';
-        transcribeBtn.disabled = true;
+    // Upload zone keyboard
+    uploadZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (!isProcessing) {
+                fileInput.click();
+            }
+        }
     });
 
-    // Handle copy button click
-    copyBtn.addEventListener('click', () => {
-        const text = transcriptionText.textContent;
-        navigator.clipboard.writeText(text).then(() => {
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = 'Copied!';
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    // Remove file button
+    removeFileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearFile();
+    });
+
+    // -----------------------------------------
+    // Drag and Drop
+    // -----------------------------------------
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (!isProcessing) {
+            uploadZone.classList.add('drag-over');
+            showState(dragOverState);
+        }
+    });
+
+    uploadZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        if (selectedFile) {
+            showState(fileSelectedState);
+        } else {
+            showState(emptyState);
+        }
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+
+        if (!isProcessing) {
+            const dt = e.dataTransfer;
+            if (dt.files && dt.files.length > 0) {
+                handleFile(dt.files[0]);
+            }
+        }
+    });
+
+    // -----------------------------------------
+    // Transcribe Button
+    // -----------------------------------------
+    transcribeBtn.addEventListener('click', async () => {
+        if (!selectedFile || isProcessing) return;
+
+        isProcessing = true;
+        transcribeBtn.disabled = true;
+        uploadZone.style.pointerEvents = 'none';
+
+        // Show progress screen
+        showScreen('progress');
+        updateProgress(0, 'Uploading file...');
+        setStep(1);
+
+        try {
+            // Simulate upload progress
+            await simulateProgress(0, 30, 1000, 'Uploading file...');
+            setStep(2);
+
+            // Simulate processing progress
+            updateProgress(30, 'Analyzing audio...');
+            await simulateProgress(30, 80, 2000, 'Processing audio...');
+
+            // Simulate completion
+            updateProgress(90, 'Finalizing...');
+            await simulateProgress(90, 100, 500, 'Complete!');
+            setStep(4);
+
+            // Show demo transcription
+            transcriptionContent.textContent = getDemoTranscription();
+
+            // Show results
             setTimeout(() => {
-                copyBtn.textContent = originalText;
+                showScreen('results');
+                isProcessing = false;
+                uploadZone.style.pointerEvents = 'auto';
+            }, 500);
+
+        } catch (error) {
+            console.error('Error:', error);
+            progressStatus.textContent = 'Error: ' + error.message;
+            isProcessing = false;
+            uploadZone.style.pointerEvents = 'auto';
+            showScreen('action');
+            transcribeBtn.disabled = false;
+        }
+    });
+
+    // -----------------------------------------
+    // Progress Simulation (Demo)
+    // -----------------------------------------
+    function simulateProgress(start, end, duration, status) {
+        return new Promise((resolve) => {
+            const startTime = performance.now();
+            updateProgress(start, status);
+
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(start + (end - start) * (elapsed / duration), end);
+
+                updateProgress(progress, status);
+
+                if (elapsed < duration) {
+                    requestAnimationFrame(animate);
+                } else {
+                    updateProgress(end, status);
+                    resolve();
+                }
+            }
+
+            requestAnimationFrame(animate);
+        });
+    }
+
+    // -----------------------------------------
+    // Demo Transcription
+    // -----------------------------------------
+    function getDemoTranscription() {
+        return `Hello everyone, welcome to today's meeting.
+
+So basically, what I was thinking is that we should really focus on improving the user experience, you know? The interface is good but there are some pain points that users have been reporting.
+
+Main points to consider:
+1. The upload process takes too long for large files
+2. Some users are having trouble with the audio format support
+3. We need to add more language options in the future
+
+Kya aap log sochte ho ki ye sahi hai? I think we should prioritize the upload speed issue first, what do you all think?
+
+Let me know your thoughts on this. Thank you.`;
+    }
+
+    // -----------------------------------------
+    // Cancel Button
+    // -----------------------------------------
+    cancelBtn.addEventListener('click', () => {
+        isProcessing = false;
+        transcribeBtn.disabled = false;
+        uploadZone.style.pointerEvents = 'auto';
+        showScreen('action');
+        updateProgress(0, 'Cancelled');
+    });
+
+    // -----------------------------------------
+    // Copy Button
+    // -----------------------------------------
+    copyBtn.addEventListener('click', () => {
+        const text = transcriptionContent.textContent;
+
+        navigator.clipboard.writeText(text).then(() => {
+            // Success state
+            const originalText = copyBtnText.textContent;
+            copyBtnText.textContent = 'Copied!';
+            copyBtn.style.background = 'rgba(52, 199, 89, 0.15)';
+            copyBtn.style.color = 'var(--color-success)';
+
+            setTimeout(() => {
+                copyBtnText.textContent = originalText;
+                copyBtn.style.background = '';
+                copyBtn.style.color = '';
             }, 2000);
         }).catch(err => {
-            console.error('Failed to copy: ', err);
-            alert('Failed to copy text to clipboard');
+            console.error('Failed to copy:', err);
+            // Fallback: select text
+            const range = document.createRange();
+            range.selectNodeContents(transcriptionContent);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
         });
     });
 
-    // Handle download button click
+    // -----------------------------------------
+    // Download Button
+    // -----------------------------------------
     downloadBtn.addEventListener('click', () => {
-        const text = transcriptionText.textContent;
+        const text = transcriptionContent.textContent;
         const blob = new Blob([text], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `transcription_${new Date().toISOString().slice(0,19)}.txt`;
+        a.download = `${selectedFile ? selectedFile.name.replace(/\.[^/.]+$/, '') : 'transcription'}_transcript.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });
+
+    // -----------------------------------------
+    // New Transcription Button
+    // -----------------------------------------
+    newTranscriptionBtn.addEventListener('click', () => {
+        // Reset everything
+        clearFile();
+        showScreen('action');
+        transcriptionContent.textContent = '';
+        updateProgress(0, '');
+        setStep(1);
+    });
+
+    // -----------------------------------------
+    // Initialize
+    // -----------------------------------------
+    showState(emptyState);
+    showScreen('action');
 });
