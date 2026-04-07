@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Hinglish STT Offline App Launcher
-Runs the Streamlit app in offline mode with bundled dependencies.
+Hinglish STT - Offline Desktop App Launcher
+Runs the Streamlit app locally without internet after first run.
 """
 
 import subprocess
@@ -9,50 +9,81 @@ import sys
 import os
 from pathlib import Path
 
+
+def get_resource_path(relative_path: str) -> Path:
+    """Get the path to a resource, works for dev and PyInstaller."""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        return Path(sys._MEIPASS) / relative_path
+    return Path(__file__).parent / relative_path
+
+
 def main():
     """Launch the Streamlit app."""
-    # Get the directory of this script
     app_dir = Path(__file__).parent
-
-    # Path to the Streamlit app
     app_path = app_dir / "app.py"
 
     if not app_path.exists():
-        print(f"Error: {app_path} not found!")
+        print(f"ERROR: {app_path} not found!")
+        input("Press Enter to exit...")
         sys.exit(1)
 
-    # Check for HuggingFace model cache
-    hf_cache = os.environ.get("HF_HOME", os.path.join(os.path.expanduser("~"), ".cache", "huggingface"))
+    # Check for model cache
+    hf_cache = os.environ.get(
+        "HF_HOME",
+        os.path.join(os.path.expanduser("~"), ".cache", "huggingface")
+    )
     model_path = Path(hf_cache) / "hub" / "models--shunyalabs--zero-stt-hinglish"
 
     if not model_path.exists():
         print("=" * 60)
-        print("IMPORTANT: First run will download the AI model (~3GB)")
-        print("Please ensure you have a stable internet connection.")
-        print("Subsequent runs will work offline.")
+        print("  FIRST RUN SETUP")
+        print("=" * 60)
+        print()
+        print("  The AI model (~3GB) will download automatically.")
+        print("  This requires an internet connection.")
+        print()
+        print("  Estimated download time:")
+        print("    - Fast broadband: 5-10 minutes")
+        print("    - Mobile hotspot: 20-30 minutes")
+        print()
+        print("  Model will be cached for offline use after this.")
         print("=" * 60)
         print()
 
-    # Launch Streamlit
-    print("Starting Hinglish Speech-to-Text...")
-    print("Open your browser to http://localhost:8501")
+    # Streamlit configuration
+    streamlit_args = [
+        sys.executable, "-m", "streamlit", "run",
+        str(app_path),
+        "--browser.gatherUsageStats", "false",
+        "--server.headless", "true",
+        "--server.port", "8501",
+        "--server.address", "localhost",
+    ]
+
+    print("=" * 60)
+    print("  HINGLISH SPEECH-TO-TEXT")
+    print("=" * 60)
     print()
-    print("Press Ctrl+C to stop.")
+    print("  Starting app...")
+    print("  Please wait...")
+    print()
+    print("  Open your browser and go to:")
+    print("  -> http://localhost:8501")
+    print()
+    print("  Press Ctrl+C to stop the app.")
+    print("=" * 60)
     print()
 
     try:
-        subprocess.run([
-            sys.executable, "-m", "streamlit", "run",
-            str(app_path),
-            "--browser.gatherUsageStats", "false",
-            "--server.headless", "true",
-            "--server.port", "8501",
-        ])
+        subprocess.run(streamlit_args, check=True)
     except KeyboardInterrupt:
-        print("\nShutting down...")
+        print("\n\nShutting down...")
+        print("Thank you for using Hinglish STT!")
     except Exception as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+        print(f"\n\nERROR: {e}")
+        input("Press Enter to exit...")
+
 
 if __name__ == "__main__":
     main()

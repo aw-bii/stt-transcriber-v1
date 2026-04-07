@@ -1,58 +1,85 @@
 @echo off
+chcp 65001 >nul
 echo ============================================
-echo Hinglish STT - Build Offline App
+echo   Hinglish STT - Build Offline App
 echo ============================================
 echo.
+
+REM Get script directory
+set SCRIPT_DIR=%~dp0
+cd /d "%SCRIPT_DIR%"
 
 REM Check Python
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo ERROR: Python not found. Please install Python 3.8+
+    echo [ERROR] Python not found!
+    echo Please install Python 3.9+ from python.org
+    echo.
     pause
     exit /b 1
 )
 
+echo [OK] Python found
+python --version
+echo.
+
 REM Install dependencies
-echo Installing dependencies...
+echo [1/3] Installing dependencies...
+echo This may take 5-10 minutes on first run...
+echo.
+
 pip install -q pyinstaller transformers torch accelerate streamlit scipy
 
-REM Create assets directory
+if errorlevel 1 (
+    echo [ERROR] Failed to install dependencies
+    pause
+    exit /b 1
+)
+
+echo [OK] Dependencies installed
+echo.
+
+REM Create assets folder
 if not exist "assets" mkdir assets
 
-REM Download model to cache
+REM Build executable
+echo [2/3] Building executable...
+echo This may take 10-20 minutes...
 echo.
-echo NOTE: The AI model (~3GB) will be downloaded on first run.
-echo It will be cached in your HuggingFace cache folder.
-echo.
+
+REM Clean previous builds
+if exist "build" rmdir /s /q build
+if exist "dist" rmdir /s /q dist
 
 REM Build with PyInstaller
-echo Building executable...
-pyinstaller --onefile --windowed --name HinglishSTT ^
-    --add-data "app.py;." ^
-    --add-data "stt_hinglish.py;." ^
-    --hidden-import=transformers ^
-    --hidden-import=torch ^
-    --hidden-import=accelerate ^
-    --hidden-import=streamlit ^
-    --hidden-import=scipy ^
-    --hidden-import=stt_hinglish ^
-    --collect-all=transformers ^
-    --collect-all=torch ^
-    --exclude-module=tensorflow ^
-    --exclude-module=keras ^
-    --exclude-module=matplotlib ^
-    --exclude-module=pandas ^
-    --noconfirm
+pyinstaller build_app.spec --noconfirm
+
+if errorlevel 1 (
+    echo [ERROR] Build failed!
+    echo Check the error messages above.
+    pause
+    exit /b 1
+)
 
 echo.
+echo [3/3] Build complete!
+echo.
+
 echo ============================================
-echo Build Complete!
+echo   BUILD SUCCESSFUL
 echo ============================================
 echo.
-echo The executable is in: dist\HinglishSTT.exe
+echo Executable location:
+echo   dist\HinglishSTT\HinglishSTT.exe
 echo.
-echo First run: Double-click HinglishSTT.exe
-echo The model will download automatically on first run.
+echo Run the app:
+echo   dist\HinglishSTT\HinglishSTT.exe
+echo.
+echo First run: App will open in browser at localhost:8501
+echo The AI model (~3GB) will download automatically.
+echo.
+echo IMPORTANT: Keep the executable folder intact.
+echo Do not move just the .exe file alone.
 echo.
 
 pause
