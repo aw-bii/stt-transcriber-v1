@@ -2,5 +2,3 @@ torch
 transformers
 accelerate
 streamlit
-python
-uv
