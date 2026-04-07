@@ -1,0 +1,8 @@
+[build]
+exclude = ["static_backup", "app.py.flask.backup*", ".ruff_cache", "__pycache__", "*.pyc", ".git"]
+requirements = "requirements.txt"
+
+[server]
+maxUploadSize = 200
+
+[server].runOnSave = false

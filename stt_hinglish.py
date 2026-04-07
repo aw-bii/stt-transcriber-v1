@@ -1,65 +1,86 @@
 #!/usr/bin/env python3
 """
-Simple tool to convert audio files to text using the shunyalabs/zero-stt-hinglish model.
-Supports Hinglish (Hindi-English code-switching) speech recognition.
+Hinglish Speech-to-Text using shunyalabs/zero-stt-hinglish model.
+Optimized for Streamlit web deployment with caching and proper audio handling.
 """
 
-import argparse
 import os
-import sys
+import numpy as np
+import streamlit as st
 from transformers import pipeline
+import torch
 
-def transcribe_audio(audio_file, output_file=None):
+# Cache the model to avoid reloading on every request
+@st.cache_resource
+def load_model():
+    """Load and cache the transcription model."""
+    try:
+        return pipeline(
+            "automatic-speech-recognition",
+            model="shunyalabs/zero-stt-hinglish",
+            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+        )
+    except Exception as e:
+        st.error(f"Failed to load model: {str(e)}")
+        return None
+
+def transcribe_audio(audio_path):
     """
-    Transcribe audio file to text using the zero-stt-hinglish model.
-    
+    Transcribe audio file to text using cached model.
+
     Args:
-        audio_file (str): Path to the audio file
-        output_file (str, optional): Path to save the transcription. If None, prints to console.
-    
+        audio_path (str): Path to the audio file
+
     Returns:
         str: Transcribed text
     """
-    # Check if audio file exists
-    if not os.path.exists(audio_file):
-        raise FileNotFoundError(f"Audio file not found: {audio_file}")
-    
-    # Load the model pipeline
-    print("Loading the shunyalabs/zero-stt-hinglish model...")
-    transcriber = pipeline("automatic-speech-recognition", model="shunyalabs/zero-stt-hinglish")
-    
-    # Transcribe the audio
-    print(f"Transcribing {audio_file}...")
-    result = transcriber(audio_file)
-    text = result["text"]
-    
-    # Output the result
-    if output_file:
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(text)
-        print(f"Transcription saved to {output_file}")
-    else:
-        print("\nTranscription:")
-        print("-" * 50)
-        print(text)
-        print("-" * 50)
-    
-    return text
+    if not os.path.exists(audio_path):
+        raise FileNotFoundError(f"Audio file not found: {audio_path}")
 
-def main():
-    parser = argparse.ArgumentParser(description="Convert audio files to text using shunyalabs/zero-stt-hinglish model")
-    parser.add_argument("audio_file", help="Path to the audio file to transcribe")
-    parser.add_argument("-o", "--output", help="Path to save the transcription (optional)")
-    parser.add_argument("--model", default="shunyalabs/zero-stt-hinglish", 
-                       help="Hugging Face model ID (default: shunyalabs/zero-stt-hinglish)")
-    
-    args = parser.parse_args()
-    
+    model = load_model()
+    if model is None:
+        raise RuntimeError("Model not available. Please refresh and try again.")
+
     try:
-        transcribe_audio(args.audio_file, args.output)
+        result = model(audio_path)
+        return result["text"]
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        sys.exit(1)
+        error_msg = str(e)
+        if "ffmpeg" in error_msg.lower():
+            raise RuntimeError(
+                "Audio processing requires ffmpeg. Please ensure ffmpeg is installed on the server."
+            )
+        raise RuntimeError(f"Transcription failed: {error_msg}")
 
-if __name__ == "__main__":
-    main()
+def transcribe_audio_bytes(audio_bytes, sample_rate=16000):
+    """
+    Transcribe audio from bytes using the model.
+
+    Args:
+        audio_bytes (bytes): Raw audio bytes
+        sample_rate (int): Sample rate of the audio
+
+    Returns:
+        str: Transcribed text
+    """
+    import tempfile
+    import scipy.io.wavfile as wavfile
+
+    model = load_model()
+    if model is None:
+        raise RuntimeError("Model not available. Please refresh and try again.")
+
+    # Create temp file
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+        tmp_path = tmp.name
+
+    try:
+        # Write bytes to wav file
+        wavfile.write(tmp_path, sample_rate, audio_bytes)
+
+        # Transcribe
+        result = model(tmp_path)
+        return result["text"]
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)

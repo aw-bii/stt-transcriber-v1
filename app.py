@@ -2,6 +2,7 @@
 """
 Apple HIG Design - Hinglish Speech-to-Text Streamlit App
 Following Apple Human Interface Guidelines for iOS/macOS native aesthetic.
+Optimized for Streamlit Cloud deployment.
 """
 
 import streamlit as st
