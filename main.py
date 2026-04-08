@@ -25,7 +25,11 @@ def main():
 
     if not app_path.exists():
         print(f"ERROR: {app_path} not found!")
-        input("Press Enter to exit...")
+        print("Press Enter to exit...")
+        try:
+            input()
+        except (EOFError, OSError):
+            pass
         sys.exit(1)
 
     # Check for model cache
@@ -82,7 +86,11 @@ def main():
         print("Thank you for using Hinglish STT!")
     except Exception as e:
         print(f"\n\nERROR: {e}")
-        input("Press Enter to exit...")
+        print("Press Enter to exit...")
+        try:
+            input()
+        except (EOFError, OSError):
+            pass
 
 
 if __name__ == "__main__":
