@@ -654,8 +654,13 @@ if uploaded_file is not None:
     )
 
     # Save uploaded file temporarily
+    allowed_extensions = {".mp3", ".wav", ".m4a", ".flac", ".ogg", ".opus"}
+    file_ext = Path(uploaded_file.name).suffix.lower()
+    if file_ext not in allowed_extensions:
+        st.error(f"Unsupported file type: {file_ext}. Please upload an audio file.")
+        return
     with tempfile.NamedTemporaryFile(
-        delete=False, suffix=Path(uploaded_file.name).suffix
+        delete=False, suffix=file_ext
     ) as tmp_file:
         tmp_file.write(uploaded_file.getvalue())
         tmp_file_path = tmp_file.name
@@ -722,13 +727,14 @@ if uploaded_file is not None:
         finally:
             st.session_state.is_processing = False
 
-    # Clean up temporary file
-    try:
-        os.unlink(tmp_file_path)
-    except:
-        pass
+            # Clean up temporary file
+            if os.path.exists(tmp_file_path):
+                try:
+                    os.unlink(tmp_file_path)
+                except OSError:
+                    pass
 
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
 # Results Section
